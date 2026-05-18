@@ -57,7 +57,7 @@ export class TaskQueueService {
     this.queueConnection = this.buildConnection(false);
     this.workerConnection = this.buildConnection(true);
     if (!this.queueConnection || !this.workerConnection) {
-      logger.warn('Redis is not configured. Scheduled tasks will not be processed.');
+      logger.warn('[TaskQueueService] Redis is not configured. Scheduled tasks will not be processed.');
       return;
     }
 
@@ -78,11 +78,11 @@ export class TaskQueueService {
     );
 
     this.worker.on('completed', (job) => {
-      logger.info(`Job ${job.id} completed successfully`);
+      logger.info(`[TaskQueueService] Job ${job.id} completed successfully`);
     });
 
     this.worker.on('failed', (job, err) => {
-      logger.error(`Job ${job?.id} failed with error: ${err.message}`);
+      logger.error(`[TaskQueueService] Job ${job?.id} failed with error: ${err.message}`);
     });
   }
 
@@ -93,13 +93,13 @@ export class TaskQueueService {
 
   private async processJob(job: Job): Promise<void> {
     const { taskId } = job.data as { taskId: string };
-    logger.info(`Processing scheduled task ${taskId}`);
+    logger.info(`[TaskQueueService] Processing scheduled task ${taskId}`);
 
     if (this.jobProcessor) {
       await this.jobProcessor(job);
       return;
     }
-    logger.warn('No job processor configured for scheduled tasks');
+    logger.warn('[TaskQueueService] No job processor configured for scheduled tasks');
   }
 
   /**
@@ -188,11 +188,11 @@ export class TaskQueueService {
   }
 }
 
-let _instance: TaskQueueService | null = null;
+let instance: TaskQueueService | null = null;
 
 export function getTaskQueueService(): TaskQueueService {
-  if (!_instance) {
-    _instance = new TaskQueueService();
+  if (!instance) {
+    instance = new TaskQueueService();
   }
-  return _instance;
+  return instance;
 }

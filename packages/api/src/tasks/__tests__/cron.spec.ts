@@ -1,4 +1,3 @@
-import { describe, it, expect } from '@jest/globals';
 import { isValidCronExpression } from '../cron';
 
 describe('isValidCronExpression', () => {
@@ -12,11 +11,11 @@ describe('isValidCronExpression', () => {
     '15 14 1 * *',
     '0 0 1 1 *',
     '0 9-17/2 * * *',
-  ])('accepts valid expression %s', (expr) => {
+  ])('accepts valid expression %s', (expr: string) => {
     expect(isValidCronExpression(expr)).toBe(true);
   });
 
-  it.each([
+  it.each<[string, string]>([
     ['empty string', ''],
     ['too few fields', '0 * * *'],
     ['too many fields', '0 * * * * *'],
@@ -25,7 +24,7 @@ describe('isValidCronExpression', () => {
     ['unfinished list', '0, * * * *'],
     ['non-string input', null as unknown as string],
     ['object input', {} as unknown as string],
-  ])('rejects %s', (_label, expr) => {
+  ])('rejects %s', (_label: string, expr: string) => {
     expect(isValidCronExpression(expr)).toBe(false);
   });
 
