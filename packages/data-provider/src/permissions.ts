@@ -236,12 +236,6 @@ export const skillPermissionsSchema = z.object({
 });
 export type TSkillPermissions = z.infer<typeof skillPermissionsSchema>;
 
-/**
- * Minimal admin gate for Scheduled Tasks: `USE` controls visibility of the
- * side-panel entry + the `/scheduled-tasks/*` routes; `CREATE` controls
- * whether the builder accepts new tasks. Tasks are always per-user, so no
- * `SHARE` semantics are exposed yet.
- */
 export const scheduledTasksPermissionsSchema = z.object({
   [Permissions.USE]: z.boolean().default(true),
   [Permissions.CREATE]: z.boolean().default(true),

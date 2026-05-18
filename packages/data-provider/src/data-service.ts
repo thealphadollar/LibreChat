@@ -7,6 +7,7 @@ import * as m from './types/mutations';
 import * as q from './types/queries';
 import * as f from './types/files';
 import * as sk from './types/skills';
+import * as st from './types/scheduledTasks';
 import * as mcp from './types/mcpServers';
 import * as config from './config';
 import request from './request';
@@ -982,9 +983,8 @@ export const createSkillNode = (
   skillId: string,
   data: FormData | t.TCreateSkillNodeRequest,
 ): Promise<t.TSkillNode> => {
-  const isFormData = typeof FormData !== 'undefined' && data instanceof FormData;
-  const name = isFormData ? ((data as FormData).get('name') as string) || 'untitled' : (data as t.TCreateSkillNodeRequest).name;
-  const type = isFormData ? 'file' : (data as t.TCreateSkillNodeRequest).type;
+  const name = data instanceof FormData ? (data.get('name') as string) || 'untitled' : data.name;
+  const type = data instanceof FormData ? 'file' : data.type;
   const now = new Date().toISOString();
   return Promise.resolve({
     _id: `pending-${now}`,
@@ -1293,10 +1293,21 @@ export const getActiveJobs = (): Promise<ActiveJobsResponse> => {
 };
 
 // Scheduled Tasks
-export const getScheduledTasks = () => request.get<t.TScheduledTask[]>(endpoints.scheduledTasks());
-export const createScheduledTask = (payload: t.TCreateScheduledTask) =>
-  request.post(endpoints.scheduledTasks(), payload) as Promise<t.TScheduledTask>;
-export const updateScheduledTask = (id: string, payload: t.TUpdateScheduledTask) =>
-  request.put(endpoints.scheduledTask(id), payload) as Promise<t.TScheduledTask>;
-export const deleteScheduledTask = (id: string) =>
-  request.delete(endpoints.scheduledTask(id)) as Promise<{ success: boolean }>;
+export function getScheduledTasks(): Promise<st.TScheduledTask[]> {
+  return request.get(endpoints.scheduledTasks());
+}
+
+export function createScheduledTask(payload: st.TCreateScheduledTask): Promise<st.TScheduledTask> {
+  return request.post(endpoints.scheduledTasks(), payload);
+}
+
+export function updateScheduledTask(
+  id: string,
+  payload: st.TUpdateScheduledTask,
+): Promise<st.TScheduledTask> {
+  return request.put(endpoints.scheduledTask(id), payload);
+}
+
+export function deleteScheduledTask(id: string): Promise<{ success: boolean }> {
+  return request.delete(endpoints.scheduledTask(id));
+}
